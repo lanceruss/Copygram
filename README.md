@@ -4,4 +4,4 @@ This app was a study in replicating the user experience of a photo-sharing app l
 
 ## Development
 
-This app was the product of 3 weeks of work between Tyler Italiano, Paul Lefebvre, and Lance Russ during a Mobile Makers Academy cohort. Mobile Makers Academy was an 8-week advanced software engineering intensive which covers Objective C, Swift, and several of Apple’s fundamental frameworks to develop over 30 small apps.
+The app was a one week project between Tyler Italiano, Paul Lefebvre, and Lance Russ during a Mobile Makers Academy cohort. Mobile Makers Academy was an 8-week advanced software engineering intensive which covered Objective C, Swift, and several of Apple’s fundamental frameworks for developing over 30 small apps.
