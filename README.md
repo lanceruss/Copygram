@@ -1,6 +1,6 @@
 ## Synopsis
 
-This app was a study in replicating the processes that go into the creation of photo-sharing app like Instagram. This application incorporates Google's Firebase SDK for authentication, a database solution, as well as for the storage of user's images.
+This app was a study in replicating the user experience of a photo-sharing app like Instagram. The app incorporates Google's Firebase SDK for authentication, a database solution, as well as for the storage of user's images.
 
 ## Development
 
