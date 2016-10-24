@@ -29,7 +29,7 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
     let rootRefDB = FIRDatabase.database().reference()
     let rootRefStorage = FIRStorage.storage().reference()
     
-    var orientation: UIImageOrientation = .Up //1
+    var orientation: UIImageOrientation = .up //1
     var imagePicker: UIImagePickerController!
     
     var screenSize: CGRect!
@@ -47,7 +47,7 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
     var otherUserID: String?
     var otherUserDescription: String?
     
-    var newArray = [NSURL?]()
+    var newArray = [URL?]()
     
     
     
@@ -57,22 +57,22 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
         profilePicture.layer.cornerRadius = profilePicture.frame.size.width/2
         profilePicture.clipsToBounds = true
         
-        screenSize = UIScreen.mainScreen().bounds
+        screenSize = UIScreen.main.bounds
         screenWidth = screenSize.width
         screenHeight = screenSize.height
         
         navigationItem.setRightBarButtonItems(nil, animated: false)
         
         let tapGestureRecognizer = UITapGestureRecognizer(target:self, action:#selector(ProfileViewController.imageTapped(_:)))
-        profilePicture.userInteractionEnabled = true
+        profilePicture.isUserInteractionEnabled = true
         profilePicture.addGestureRecognizer(tapGestureRecognizer)
         
         if otherProfile == true {
 
-            rootRefDB.observeSingleEventOfType(.Value) { (snap: FIRDataSnapshot) in
+            rootRefDB.observeSingleEvent(of: .value) { (snap: FIRDataSnapshot) in
                 let totalSnap = (snap.value as? NSDictionary)!
                 if let users = totalSnap["users"] as? NSDictionary {
-                    for (key, value) in (users.valueForKey(self.user!))! as! NSDictionary {
+                    for (key, value) in (users.value(forKey: self.user!))! as! NSDictionary {
                         if key as! String == "following" {
                             for (_, value2) in value as! NSDictionary {
                                 for (key2, _) in value2 as! NSDictionary {
@@ -82,11 +82,11 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
                                         let cornerRadius : CGFloat = 3.0
                                         
                                         self.editProfileButton.backgroundColor = UIColor(red:0.44, green:0.75, blue:0.31, alpha:1.00)
-                                        self.editProfileButton.setTitle("FOLLOWING", forState: UIControlState.Normal)
-                                        self.editProfileButton.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+                                        self.editProfileButton.setTitle("FOLLOWING", for: UIControlState())
+                                        self.editProfileButton.setTitleColor(UIColor.white, for: UIControlState())
                                         self.editProfileButton.layer.cornerRadius = cornerRadius
                                         self.editProfileButton.layer.borderWidth = 0.8
-                                        self.editProfileButton.layer.borderColor = UIColor.clearColor().CGColor
+                                        self.editProfileButton.layer.borderColor = UIColor.clear.cgColor
                                         
                                     }
                                 }
@@ -103,8 +103,8 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
                 let cornerRadius : CGFloat = 3.0
                 
                 editProfileButton.backgroundColor = UIColor(red:0.44, green:0.75, blue:0.31, alpha:1.00)
-                editProfileButton.setTitle("FOLLOWING", forState: UIControlState.Normal)
-                editProfileButton.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+                editProfileButton.setTitle("FOLLOWING", for: UIControlState())
+                editProfileButton.setTitleColor(UIColor.white, for: UIControlState())
                 editProfileButton.layer.cornerRadius = cornerRadius
                 
             } else {
@@ -112,11 +112,11 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
                 // let borderAlpha : CGFloat = 0.7
                 let cornerRadius : CGFloat = 3.0
                 
-                editProfileButton.backgroundColor = UIColor.clearColor()
-                editProfileButton.setTitle("+ FOLLOW", forState: UIControlState.Normal)
-                editProfileButton.setTitleColor(UIColor(red:0.22, green:0.59, blue:0.94, alpha:1.00), forState: UIControlState.Normal)
+                editProfileButton.backgroundColor = UIColor.clear
+                editProfileButton.setTitle("+ FOLLOW", for: UIControlState())
+                editProfileButton.setTitleColor(UIColor(red:0.22, green:0.59, blue:0.94, alpha:1.00), for: UIControlState())
                 editProfileButton.layer.borderWidth = 0.8
-                editProfileButton.layer.borderColor = UIColor(red:0.22, green:0.59, blue:0.94, alpha: 1.00).CGColor
+                editProfileButton.layer.borderColor = UIColor(red:0.22, green:0.59, blue:0.94, alpha: 1.00).cgColor
                 editProfileButton.layer.cornerRadius = cornerRadius
             }
         }
@@ -132,58 +132,58 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
         
         if otherProfile == true {
             
-            editProfileButton.hidden = false
-            profileDescriptionLabel.editable = false
-            profileDescriptionLabel.selectable = false
+            editProfileButton.isHidden = false
+            profileDescriptionLabel.isEditable = false
+            profileDescriptionLabel.isSelectable = false
             profileDescriptionLabel.text = otherUserDescription
             // profileNameLabel.editable
         } else {
             
-            profileDescriptionLabel.editable = true
-            profileDescriptionLabel.editable = true
+            profileDescriptionLabel.isEditable = true
+            profileDescriptionLabel.isEditable = true
         }
         
         // If it is your own profile you are viewing
         if otherProfile != true {
             
-            rootRefDB.observeSingleEventOfType(.Value) { (snap: FIRDataSnapshot) in
+            rootRefDB.observeSingleEvent(of: .value) { (snap: FIRDataSnapshot) in
                 let totalSnap = (snap.value as? NSDictionary)!
                 if let users = totalSnap["users"] as? NSDictionary {
                     
                     // Get the username for the current user.
-                    self.currentUsername = users.valueForKey("\(self.user!)")!.valueForKey("username")! as? String
+                    self.currentUsername = (users.value(forKey: "\(self.user!)")! as AnyObject).value(forKey: "username")! as? String
                     
                     // set title on page to be your own username
                     self.navigationItem.title = "\(self.currentUsername!)"
                     
                     // Profile picture for yourself
-                    let urlString = users.valueForKey("\(self.user!)")!.valueForKey("profilePicture")! as? String
-                    self.profilePicture.kf_setImageWithURL(NSURL(string: "\(urlString!)")!, placeholderImage: nil)
-                    self.profileURLString = users.valueForKey("\(self.user!)")!.valueForKey("profilePicture")! as? String
+                    let urlString = (users.value(forKey: "\(self.user!)")! as AnyObject).value(forKey: "profilePicture")! as? String
+                    self.profilePicture.kf_setImageWithURL(URL(string: "\(urlString!)")!, placeholderImage: nil)
+                    self.profileURLString = (users.value(forKey: "\(self.user!)")! as AnyObject).value(forKey: "profilePicture")! as? String
                     
-                    self.profileNameLabel.text = users.valueForKey("\(self.user!)")!.valueForKey("realName")! as? String
+                    self.profileNameLabel.text = (users.value(forKey: "\(self.user!)")! as AnyObject).value(forKey: "realName")! as? String
                     
-                    let selfDescription = users.valueForKey("\(self.user!)")!.valueForKey("profileDescription")! as? String
+                    let selfDescription = (users.value(forKey: "\(self.user!)")! as AnyObject).value(forKey: "profileDescription")! as? String
                     self.profileDescriptionLabel.text = selfDescription
                     
                 }
             }
             
             // ?? Loading newArray with all of YOUR OWN images
-            rootRefDB.observeSingleEventOfType(.Value) { (snap: FIRDataSnapshot) in
+            rootRefDB.observeSingleEvent(of: .value) { (snap: FIRDataSnapshot) in
                 self.newArray.removeAll()
                 let snapshotAll = (snap.value as? NSDictionary)!
                 if let posts = snapshotAll["posts"] as? NSDictionary {
                     
                     for (_, value) in posts {
                         let valueDict = value as! NSDictionary
-                        if valueDict.valueForKey("username") as! String == "\(self.currentUsername!)" {
-                            let finalPost = valueDict.valueForKey("imageString")! as! String
-                            let newURL = NSURL(string: finalPost)
+                        if valueDict.value(forKey: "username") as! String == "\(self.currentUsername!)" {
+                            let finalPost = valueDict.value(forKey: "imageString")! as! String
+                            let newURL = URL(string: finalPost)
                             self.newArray.append(newURL!)
                         }
                     }
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         self.postsCounterLabel.text = "\(self.newArray.count)"
                         self.profileCollectionView.reloadData()
                     })
@@ -193,23 +193,23 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
         // Else if it is not your profile.
         } else {
             
-            rootRefDB.observeSingleEventOfType(.Value) { (snap: FIRDataSnapshot) in
+            rootRefDB.observeSingleEvent(of: .value) { (snap: FIRDataSnapshot) in
                 let totalSnap = (snap.value as? NSDictionary)!
                 if let users = totalSnap["users"] as? NSDictionary {
                     
                     for (key, value) in users {
                         let valueDict = value as! NSDictionary
-                        if valueDict.valueForKey("username") as! String == "\(self.otherUser!)" {
+                        if valueDict.value(forKey: "username") as! String == "\(self.otherUser!)" {
                             self.otherUserID = key as? String
-                            self.currentUsername = users.valueForKey("\(key)")!.valueForKey("username")! as? String
+                            self.currentUsername = (users.value(forKey: "\(key)")! as AnyObject).value(forKey: "username")! as? String
                             self.navigationItem.title = "\(self.currentUsername!)"
-                            self.otherUserDescription = users.valueForKey("\(key)")!.valueForKey("profileDescription")! as? String
+                            self.otherUserDescription = (users.value(forKey: "\(key)")! as AnyObject).value(forKey: "profileDescription")! as? String
                             self.profileDescriptionLabel.text = self.otherUserDescription
                             
                             // Profile Picture for someone else.
-                            let urlString = users.valueForKey("\(key)")!.valueForKey("username")! as? String
-                            self.profilePicture.kf_setImageWithURL(NSURL(string: "\(urlString!)")!, placeholderImage: nil)
-                            self.profileNameLabel.text = users.valueForKey("\(key)")!.valueForKey("realName")! as? String
+                            let urlString = (users.value(forKey: "\(key)")! as AnyObject).value(forKey: "username")! as? String
+                            self.profilePicture.kf_setImageWithURL(URL(string: "\(urlString!)")!, placeholderImage: nil)
+                            self.profileNameLabel.text = (users.value(forKey: "\(key)")! as AnyObject).value(forKey: "realName")! as? String
                         }
                         
                     }
@@ -217,21 +217,21 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
             }
             
             // Loading newArray with the urls of the OTHER USERS images
-            rootRefDB.observeSingleEventOfType(.Value) { (snap: FIRDataSnapshot) in
+            rootRefDB.observeSingleEvent(of: .value) { (snap: FIRDataSnapshot) in
                 self.newArray.removeAll()
                 let snapshotAll = (snap.value as? NSDictionary)!
                 if let posts = snapshotAll["posts"] as? NSDictionary {
                     
                     for (_, value) in posts {
                         let valueDict = value as! NSDictionary
-                        if valueDict.valueForKey("username") as! String == "\(self.currentUsername!)" {
-                            let finalPost = valueDict.valueForKey("imageString")! as! String
-                            let newURL = NSURL(string: finalPost)
+                        if valueDict.value(forKey: "username") as! String == "\(self.currentUsername!)" {
+                            let finalPost = valueDict.value(forKey: "imageString")! as! String
+                            let newURL = URL(string: finalPost)
                             //print("in it!")
                             self.newArray.append(newURL!)
                         }
                     }
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         self.postsCounterLabel.text = "\(self.newArray.count)"
                         self.profileCollectionView.reloadData()
                     })
@@ -242,42 +242,42 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
     }
     
     //set up the profile to function/look different depending on if it is your own profile or someone elses
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         if otherProfile == true {
             if following == true {
-                editProfileButton.hidden = false
+                editProfileButton.isHidden = false
                 
                 let cornerRadius : CGFloat = 3.0
                 
                 editProfileButton.backgroundColor = UIColor(red:0.44, green:0.75, blue:0.31, alpha:1.00)
-                editProfileButton.setTitle("FOLLOWING", forState: UIControlState.Normal)
-                editProfileButton.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+                editProfileButton.setTitle("FOLLOWING", for: UIControlState())
+                editProfileButton.setTitleColor(UIColor.white, for: UIControlState())
                 editProfileButton.layer.cornerRadius = cornerRadius
                 
             } else {
-                editProfileButton.hidden = false
+                editProfileButton.isHidden = false
                 
                 //                let borderAlpha : CGFloat = 0.7
                 let cornerRadius : CGFloat = 3.0
                 
-                editProfileButton.backgroundColor = UIColor.clearColor()
-                editProfileButton.setTitle("+ FOLLOW", forState: UIControlState.Normal)
-                editProfileButton.setTitleColor(UIColor(red:0.22, green:0.59, blue:0.94, alpha:1.00), forState: UIControlState.Normal)
+                editProfileButton.backgroundColor = UIColor.clear
+                editProfileButton.setTitle("+ FOLLOW", for: UIControlState())
+                editProfileButton.setTitleColor(UIColor(red:0.22, green:0.59, blue:0.94, alpha:1.00), for: UIControlState())
                 editProfileButton.layer.borderWidth = 0.8
-                editProfileButton.layer.borderColor = UIColor(red:0.22, green:0.59, blue:0.94, alpha: 1.00).CGColor
+                editProfileButton.layer.borderColor = UIColor(red:0.22, green:0.59, blue:0.94, alpha: 1.00).cgColor
                 
                 editProfileButton.layer.cornerRadius = cornerRadius
                 
             }
         } else {
-            editProfileButton.hidden = true
+            editProfileButton.isHidden = true
         }
         profileCollectionView.reloadData()
         
     }
     
     
-    func imageTapped(img: AnyObject) {
+    func imageTapped(_ img: AnyObject) {
         
         if otherProfile == false || otherProfile == nil {
             self.presentCamera()
@@ -290,17 +290,17 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
         
         imagePicker = UIImagePickerController()
         imagePicker.delegate = self
-        imagePicker.sourceType = .Camera
+        imagePicker.sourceType = .camera
         imagePicker.allowsEditing = true
         
-        presentViewController(imagePicker, animated: true, completion: nil)
+        present(imagePicker, animated: true, completion: nil)
     }
     
     // for the image picker that controls photo taking
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
-        imagePicker.dismissViewControllerAnimated(true, completion: nil)
+        imagePicker.dismiss(animated: true, completion: nil)
         profilePicture.image = info[UIImagePickerControllerOriginalImage] as? UIImage
         //        profilePicture.clipsToBounds = true
         orientation = (profilePicture.image?.imageOrientation)!
@@ -315,29 +315,29 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
         let database = rootRefDB.child("users/") //2
         
         
-        let storageRef = photosRef.child("\(NSUUID().UUIDString).png")
+        let storageRef = photosRef.child("\(UUID().uuidString).png")
         
         let metadata = FIRStorageMetadata()
         metadata.contentType = "image/jpg"
-        storageRef.putData(imageData, metadata: metadata).observeStatus(.Success) { (snapshot) in
+        storageRef.put(imageData as Data, metadata: metadata).observe(.success) { (snapshot) in
             
             database.child("\(self.user!)/profilePicture").setValue(snapshot.metadata?.downloadURL()?.absoluteString)
             
             
         }
         
-        imagePicker.dismissViewControllerAnimated(true, completion: nil)
+        imagePicker.dismiss(animated: true, completion: nil)
         
         
     }
     
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         
         return 1
     }
     
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         if newArray.count == 0 {
             return 0
@@ -346,15 +346,15 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
         }
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ProfilePhotoCell", forIndexPath: indexPath) as! ProfileGridCells
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfilePhotoCell", for: indexPath) as! ProfileGridCells
         
-        cell.backgroundColor = UIColor.whiteColor()
-        collectionView.backgroundColor = UIColor.whiteColor()
+        cell.backgroundColor = UIColor.white
+        collectionView.backgroundColor = UIColor.white
         
-        if let url = self.newArray[indexPath.row] {
-            cell.profileGridImageView.kf_setImageWithURL(NSURL(string: "\(url)")!, placeholderImage: nil)
+        if let url = self.newArray[(indexPath as NSIndexPath).row] {
+            cell.profileGridImageView.kf_setImageWithURL(URL(string: "\(url)")!, placeholderImage: nil)
         }
         
         cell.frame.size.width = screenWidth / 3
@@ -364,16 +364,16 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
         
     }
     
-    @IBAction func onEditProfileButtonPressed(sender: AnyObject) {
+    @IBAction func onEditProfileButtonPressed(_ sender: AnyObject) {
         
         if otherProfile == true {
             if following == true {
                 
                 //obtain this users uid and remove them from your array of followed accounts
-                rootRefDB.observeSingleEventOfType(.Value) { (snap: FIRDataSnapshot) in
+                rootRefDB.observeSingleEvent(of: .value) { (snap: FIRDataSnapshot) in
                     let totalSnap = (snap.value as? NSDictionary)!
                     if let users = totalSnap["users"] as? NSDictionary {
-                        for (key, value) in (users.valueForKey(self.user!))!.valueForKey("following") as! NSDictionary {
+                        for (key, value) in ((users.value(forKey: self.user!))! as AnyObject).value(forKey: "following") as! NSDictionary {
                             let newDict = value as? NSDictionary
                             for (key2, _) in newDict! {
                                 if key2 as? String == self.otherUser! {
@@ -388,18 +388,18 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
                 
                 print("delete")
                 
-                editProfileButton.backgroundColor = UIColor.clearColor()
-                editProfileButton.setTitle("+ FOLLOW", forState: UIControlState.Normal)
-                editProfileButton.setTitleColor(UIColor(red:0.22, green:0.59, blue:0.94, alpha:1.00), forState: UIControlState.Normal)
+                editProfileButton.backgroundColor = UIColor.clear
+                editProfileButton.setTitle("+ FOLLOW", for: UIControlState())
+                editProfileButton.setTitleColor(UIColor(red:0.22, green:0.59, blue:0.94, alpha:1.00), for: UIControlState())
                 editProfileButton.layer.borderWidth = 0.8
-                editProfileButton.layer.borderColor = UIColor(red:0.22, green:0.59, blue:0.94, alpha: 1.00).CGColor
+                editProfileButton.layer.borderColor = UIColor(red:0.22, green:0.59, blue:0.94, alpha: 1.00).cgColor
                 
                 
                 following = false
                 
             } else {
-                let thisUser: NSString = otherUser!
-                let thisUserID: NSString = otherUserID!
+                let thisUser: NSString = otherUser! as NSString
+                let thisUserID: NSString = otherUserID! as NSString
                 //obtain this users uid and add them to your array of followed account
                 print("add")
                 let database = rootRefDB.child("users/\(user!)/following")
@@ -408,10 +408,10 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
                 //                database.setValue(["followCount": ])
                 
                 editProfileButton.backgroundColor = UIColor(red:0.44, green:0.75, blue:0.31, alpha:1.00)
-                editProfileButton.setTitle("FOLLOWING", forState: UIControlState.Normal)
-                editProfileButton.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+                editProfileButton.setTitle("FOLLOWING", for: UIControlState())
+                editProfileButton.setTitleColor(UIColor.white, for: UIControlState())
                 editProfileButton.layer.borderWidth = 0.8
-                editProfileButton.layer.borderColor = UIColor.clearColor().CGColor
+                editProfileButton.layer.borderColor = UIColor.clear.cgColor
                 
                 
                 following = true
@@ -423,11 +423,11 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
     }
     
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ToIndividualPost" {
-            let dvc = segue.destinationViewController as? IndividualPostViewController
-            let indexPath = self.profileCollectionView.indexPathsForSelectedItems()
-            let url = self.newArray[(indexPath?.first?.row)!]
+            let dvc = segue.destination as? IndividualPostViewController
+            let indexPath = self.profileCollectionView.indexPathsForSelectedItems
+            let url = self.newArray[((indexPath?.first as NSIndexPath?)?.row)!]
             dvc!.postURL = url
             dvc!.profilePictureString = profileURLString!
             
